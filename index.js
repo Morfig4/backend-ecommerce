@@ -1,23 +1,41 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const createMongoMemoryServer = require('./db/db-mongo.js');
+import express from "express";
+import mongoose from "mongoose";
+import createMongoMemoryServer from "./db/db-mongo.js";
+import productSchema from "./models/products.js";
+
 const server = express();
-const port = 3000;
 
 server.use(express.urlencoded());
 server.use(express.json());
 
-server.get('/', (req, res) => {
-  res.send('Hello World!');
+server.get("/", (_, res) => {
+    res.send("Alive");
 });
 
-createMongoMemoryServer().then(mongod => {
-  mongoose.connect(mongod.getUri())
-    .then(() => {
-      server.listen(port, () => {
-        console.log(`Example app listening on port ${port}`);
-        console.log('Conectado ao MongoDB Memory Server!');
-      });
-    })
-    .catch((e) => { console.log("error", e); });
-});
+async function startServer() {
+    try {
+        const mongod = await createMongoMemoryServer();
+        const uri = mongod.getUri();
+        
+        await mongoose.connect(uri);
+        console.log("Conected");
+        
+        server.listen(3000, () => {
+            console.log("Server alive on http://localhost:3000/ ");
+        });
+    } catch (error) {
+        console.log("Failed to start server:", error);
+    }
+}
+
+
+server.get("/products", async (_, res) => {
+      try{
+        const products = await productSchema.find();
+        res.json(products);
+      } catch (error) {
+        res.send("Find Failed", error)
+      }
+})
+
+startServer();

@@ -1,7 +1,7 @@
-const { MongoMemoryServer } = require('mongodb-memory-server');
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 async function createMongoMemoryServer() {
-  return await MongoMemoryServer.create();
+    return await MongoMemoryServer.create();
 }
 
-module.exports = createMongoMemoryServer;
+export default createMongoMemoryServer;
