@@ -2,9 +2,12 @@ import express from "express";
 import mongoose from "mongoose";
 import createMongoMemoryServer from "./db/db-mongo.js";
 import productSchema from "./models/products.js";
+import cors from "cors";
+    
 
 const server = express();
 
+server.use(cors());
 server.use(express.urlencoded());
 server.use(express.json());
 
